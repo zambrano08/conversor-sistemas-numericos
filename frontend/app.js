@@ -53,8 +53,6 @@ class ConversorApp {
             fromBtns: document.querySelectorAll('.from-section .system-btn'),
             toBtns: document.querySelectorAll('.to-section .system-btn'),
             numberInput: document.getElementById('numberInput'),
-            fromPrefix: document.getElementById('fromPrefix'),
-            toPrefix: document.getElementById('toPrefix'),
             inputHint: document.getElementById('inputHint'),
             resultValue: document.getElementById('resultValue'),
             swapBtn: document.getElementById('swapBtn'),
@@ -127,11 +125,9 @@ class ConversorApp {
         if (this.toSystem === 'custom') {
             this.elements.customToGroup.classList.remove('hidden');
             this.toBase = parseInt(this.elements.customToBase.value) || 16;
-            this.elements.toPrefix.textContent = '?';
         } else {
             this.elements.customToGroup.classList.add('hidden');
             this.toBase = SYSTEMS[this.toSystem].base;
-            this.elements.toPrefix.textContent = SYSTEMS[this.toSystem].prefix;
         }
     }
 
@@ -142,9 +138,6 @@ class ConversorApp {
             this.elements.numberInput.placeholder = 'XYZ';
         } else {
             const system = SYSTEMS[this.fromSystem];
-            if (this.elements.fromPrefix) {
-                this.elements.fromPrefix.textContent = system.prefix;
-            }
             this.elements.numberInput.placeholder = system.placeholder;
             this.elements.inputHint.textContent = system.hint;
         }
@@ -188,7 +181,6 @@ class ConversorApp {
         if (this.toSystem === 'custom') {
             this.elements.customToGroup.classList.remove('hidden');
             this.elements.customToBase.value = this.toBase;
-            this.elements.toPrefix.textContent = '?';
         } else {
             this.elements.customToGroup.classList.add('hidden');
         }

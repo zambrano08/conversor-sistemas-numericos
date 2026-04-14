@@ -27,23 +27,7 @@
 
     <main class="container">
       <header class="header">
-        <div class="logo">
-          <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-            <rect width="48" height="48" rx="14" fill="url(#logoGrad)" />
-            <path
-              d="M14 24h20M24 14v20"
-              stroke="white"
-              stroke-width="3.5"
-              stroke-linecap="round"
-            />
-            <defs>
-              <linearGradient id="logoGrad" x1="0" y1="0" x2="48" y2="48">
-                <stop stop-color="#6366f1" />
-                <stop offset="1" stop-color="#8b5cf6" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
+
         <h1>Conversor</h1>
         <p class="subtitle">Transforma números entre sistemas</p>
       </header>
@@ -82,7 +66,6 @@
             <span class="custom-label">Base custom</span>
           </div>
           <div class="input-wrapper">
-            <span id="fromPrefix" class="input-prefix">0b</span>
             <input
               type="text"
               id="numberInput"
@@ -145,7 +128,6 @@
             <span class="custom-label">Base custom</span>
           </div>
           <div class="output-wrapper">
-            <span id="toPrefix" class="output-prefix">0x</span>
             <span id="resultValue" class="result-text">—</span>
           </div>
         </div>
