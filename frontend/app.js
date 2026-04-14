@@ -142,7 +142,9 @@ class ConversorApp {
             this.elements.numberInput.placeholder = 'XYZ';
         } else {
             const system = SYSTEMS[this.fromSystem];
-            this.elements.fromPrefix.textContent = system.prefix;
+            if (this.elements.fromPrefix) {
+                this.elements.fromPrefix.textContent = system.prefix;
+            }
             this.elements.numberInput.placeholder = system.placeholder;
             this.elements.inputHint.textContent = system.hint;
         }
