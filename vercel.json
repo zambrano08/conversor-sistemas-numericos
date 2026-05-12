@@ -1,12 +1,27 @@
 {
-  "rewrites": [
-    { "source": "/(index.html)?", "destination": "/frontend/index.html" },
-    { "source": "/static/(.*)", "destination": "/frontend/$1" },
-    { "source": "/(.*)", "destination": "/main.py" }
-  ],
-  "functions": {
-    "main.py": {
-      "runtime": "vercel-python@0.6.0"
+  "version": 2,
+  "builds": [
+    {
+      "src": "main.py",
+      "use": "@vercel/python"
     }
-  }
+  ],
+  "routes": [
+    {
+      "src": "/convertir",
+      "dest": "main.py"
+    },
+    {
+      "src": "/suma-binaria",
+      "dest": "main.py"
+    },
+    {
+      "src": "/static/(.*)",
+      "dest": "/frontend/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/index.html"
+    }
+  ]
 }

@@ -42,11 +42,3 @@ async def api_suma_binaria(req: SumaBinariaRequest):
         return resultado
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-# --- ARCHIVOS ESTÁTICOS ---
-# Solo montamos si la carpeta existe (evita errores en despliegue)
-if os.path.exists("frontend"):
-    app.mount("/", StaticFiles(directory="frontend", html=True), name="static")
-
-
-
