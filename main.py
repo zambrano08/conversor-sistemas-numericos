@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from conversor import convertidor_universal, suma_binaria_paso_a_paso
@@ -42,3 +43,9 @@ async def api_suma_binaria(req: SumaBinariaRequest):
         return resultado
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/")
+async def root():
+    return FileResponse("frontend/index.html")
+
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
