@@ -9,15 +9,21 @@
   "routes": [
     {
       "src": "/convertir",
+      "methods": ["POST"],
       "dest": "main.py"
     },
     {
       "src": "/suma-binaria",
+      "methods": ["POST"],
       "dest": "main.py"
     },
     {
       "src": "/static/(.*)",
       "dest": "/frontend/$1"
+    },
+    {
+      "src": "/",
+      "dest": "/frontend/index.html"
     },
     {
       "src": "/(.*)",
