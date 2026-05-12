@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 class CalculadoraBinariaApp {
     constructor() {
-        this.api = new ConversorAPI('http://127.0.0.1:8000');
+        this.api = new ConversorAPI('');
 
         this.elements = {
             binNum1: document.getElementById('binNum1'),
