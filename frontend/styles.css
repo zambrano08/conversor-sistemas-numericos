@@ -458,14 +458,17 @@ body {
     body {
         padding: 1rem;
     }
+    
 
     .header h1 {
         font-size: 2rem;
     }
+    
 
     .system-picker {
         grid-template-columns: repeat(5, 1fr);
     }
+    
 
     .system-btn {
         padding: 0.5rem 0.1rem;

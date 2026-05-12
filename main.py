@@ -26,5 +26,5 @@ async def api_suma_binaria(req: SumaBinariaRequest):
         raise HTTPException(status_code=400, detail="Dígitos inválidos")
     try:
         return suma_binaria_paso_a_paso(req.bin1, req.bin2)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))

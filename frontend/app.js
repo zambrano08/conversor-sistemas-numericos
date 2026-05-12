@@ -15,11 +15,11 @@ const BASE_NAMES = {
 
 class ConversorAPI {
     constructor(baseUrl) {
-        this.baseUrl = "";
+        this.baseUrl = baseUrl;
     }
 
     async convertir(numero, baseIn, baseOut) {
-        const response = await fetch(`${this.baseUrl}convertir`, {
+        const response = await fetch(`${this.baseUrl}/convertir`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ class ConversorAPI {
     }
 
     async sumaBinaria(bin1, bin2) {
-        const response = await fetch(`${this.baseUrl}suma-binaria`, {
+        const response = await fetch(`${this.baseUrl}/suma-binaria`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -57,22 +57,19 @@ class ConversorAPI {
             throw new Error(errorData.detail || 'Error en la suma binaria');
         }
 
-        const data = await response.json();
-        return {
-            ...data,
-            resultado: data.resultado ?? data.res
-        };
+        return await response.json();
     }
 }
 
 class ConversorApp {
     constructor() {
-        this.api = new ConversorAPI('');
+        this.api = new ConversorAPI('https://conversor-sistemas-numericos-production.up.railway.app');
+        this.api = new ConversorAPI('http://127.0.0.1:8000');
         this.fromSystem = 'bin';
         this.toSystem = 'hex';
         this.fromBase = 2;
         this.toBase = 16;
-        
+
         this.elements = {
             fromBtns: document.querySelectorAll('.from-section .system-btn'),
             toBtns: document.querySelectorAll('.to-section .system-btn'),
@@ -87,6 +84,7 @@ class ConversorApp {
             customFromBase: document.getElementById('customFromBase'),
             customToBase: document.getElementById('customToBase'),
             errorSection: document.getElementById('errorSection'),
+            errorMessage: document.getElementById('errorMessage'),
             errorMessage: document.getElementById('errorMessage'),
             procedimientoSection: document.getElementById('procedimientoSection'),
             procCarreos: document.getElementById('procCarreos'),
@@ -134,7 +132,7 @@ class ConversorApp {
         this.elements.fromBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         this.fromSystem = btn.dataset.system;
-        
+
         if (this.fromSystem === 'custom') {
             this.elements.customFromGroup.classList.remove('hidden');
             this.fromBase = parseInt(this.elements.customFromBase.value) || 2;
@@ -142,7 +140,7 @@ class ConversorApp {
             this.elements.customFromGroup.classList.add('hidden');
             this.fromBase = SYSTEMS[this.fromSystem].base;
         }
-        
+
         this.updateHint();
     }
 
@@ -150,7 +148,7 @@ class ConversorApp {
         this.elements.toBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         this.toSystem = btn.dataset.system;
-        
+
         if (this.toSystem === 'custom') {
             this.elements.customToGroup.classList.remove('hidden');
             this.toBase = parseInt(this.elements.customToBase.value) || 16;
@@ -185,10 +183,10 @@ class ConversorApp {
     swap() {
         const tempSystem = this.fromSystem;
         const tempBase = this.fromBase;
-        
+
         this.fromSystem = this.toSystem;
         this.toSystem = tempSystem;
-        
+
         this.fromBase = this.toBase;
         this.toBase = tempBase;
 
@@ -217,7 +215,7 @@ class ConversorApp {
         const inputValue = this.elements.numberInput.value;
         this.elements.numberInput.value = this.elements.resultValue.textContent !== '—' 
             ? this.elements.resultValue.textContent : '';
-        
+
         this.updateUI();
     }
 
@@ -332,7 +330,7 @@ class ConversorApp {
             await navigator.clipboard.writeText(result);
             this.elements.outputWrapper.classList.add('copied');
             this.elements.resultValue.textContent = '✓';
-            
+
             setTimeout(() => {
                 this.elements.resultValue.textContent = result;
                 this.elements.outputWrapper.classList.remove('copied');
@@ -350,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 class CalculadoraBinariaApp {
     constructor() {
-        this.api = new ConversorAPI('');
+        this.api = new ConversorAPI('http://127.0.0.1:8000');
 
         this.elements = {
             binNum1: document.getElementById('binNum1'),
