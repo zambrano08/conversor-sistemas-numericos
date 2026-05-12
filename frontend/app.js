@@ -57,7 +57,11 @@ class ConversorAPI {
             throw new Error(errorData.detail || 'Error en la suma binaria');
         }
 
-        return await response.json();
+        const data = await response.json();
+        return {
+            ...data,
+            resultado: data.resultado ?? data.res
+        };
     }
 }
 
