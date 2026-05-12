@@ -1,13 +1,13 @@
-# main.py
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from conversor import convertidor_universal, suma_binaria_paso_a_paso
+import os
 
 app = FastAPI()
 
-# Configuramos CORS para que tu app pueda comunicarse
+# Configuramos CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -24,31 +24,29 @@ class SumaBinariaRequest(BaseModel):
     bin1: str
     bin2: str
 
+# --- RUTAS DE LA API (Deben ir ANTES del mount) ---
+
 @app.post("/convertir")
 async def api_convertir(req: ConversionRequest):
     resultado = convertidor_universal(req.numero, req.base_in, req.base_out)
-
     if resultado is None:
         raise HTTPException(status_code=400, detail="Número o base inválida")
-
     return {"resultado": resultado}
 
 @app.post("/suma-binaria")
 async def api_suma_binaria(req: SumaBinariaRequest):
-    """Realiza suma binaria con detalles paso a paso"""
     try:
-        # Validamos que los números sean binarios válidos
         if not all(c in '01' for c in req.bin1) or not all(c in '01' for c in req.bin2):
-            raise HTTPException(status_code=400, detail="Los números deben contener solo dígitos binarios (0 y 1)")
-
+            raise HTTPException(status_code=400, detail="Dígitos inválidos")
         resultado = suma_binaria_paso_a_paso(req.bin1, req.bin2)
         return resultado
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-# Montar archivos estáticos de la carpeta frontend con html=True para servir index.html
-app.mount("/", StaticFiles(directory="frontend", html=True), name="static")
-
+# --- ARCHIVOS ESTÁTICOS ---
+# Solo montamos si la carpeta existe (evita errores en despliegue)
+if os.path.exists("frontend"):
+    app.mount("/", StaticFiles(directory="frontend", html=True), name="static")
 
 
 
