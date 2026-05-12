@@ -4,20 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Conversor Numérico</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" type="image/png" href="/static/icon-192.png" />
+    <link rel="stylesheet" href="/static/styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="/static/manifest.json" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
-    <link rel="apple-touch-icon" href="icon-192.png" />
+    <link rel="apple-touch-icon" href="/static/icon-192.png" />
   </head>
   <body>
     <div class="bg-decoration">
@@ -166,12 +167,109 @@
         <span id="errorMessage"></span>
       </section>
 
+      <section id="procedimientoSection" class="resultado-procedimiento hidden">
+        <p class="procedimiento-label">Procedimiento:</p>
+        <p class="procedimiento-line carreos"><span id="procCarreos"></span></p>
+        <p class="procedimiento-line"><span id="procN1"></span></p>
+        <p class="procedimiento-line">+ <span id="procN2"></span></p>
+        <p class="procedimiento-line resultado">―――――</p>
+        <p class="procedimiento-line resultado"><span id="procRes"></span></p>
+      </section>
+
+      <section class="binary-calculator">
+        <h2 class="section-title">Calculadora Binaria</h2>
+
+        <div class="calc-inputs">
+          <div class="calc-input-group">
+            <label class="calc-label">Número 1</label>
+            <div class="input-wrapper">
+              <input
+                type="text"
+                id="binNum1"
+                placeholder="1010"
+                autocomplete="off"
+                autocapitalize="off"
+              />
+            </div>
+            <span id="binHint1" class="input-hint">Solo 0 y 1</span>
+          </div>
+
+          <div class="calc-input-group">
+            <label class="calc-label">Número 2</label>
+            <div class="input-wrapper">
+              <input
+                type="text"
+                id="binNum2"
+                placeholder="1101"
+                autocomplete="off"
+                autocapitalize="off"
+              />
+            </div>
+            <span id="binHint2" class="input-hint">Solo 0 y 1</span>
+          </div>
+
+          <div class="calc-input-group">
+            <label class="calc-label">Operación</label>
+            <select id="binOperation" class="operation-select">
+              <option value="suma">Suma</option>
+            </select>
+          </div>
+        </div>
+
+        <button id="calcBtn" class="btn-convert">
+          <span class="btn-text">Calcular</span>
+          <span class="btn-loader hidden">
+            <svg class="spinner" viewBox="0 0 24 24">
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="3"
+                fill="none"
+                stroke-dasharray="31.4 31.4"
+              />
+            </svg>
+          </span>
+        </button>
+
+        <div id="calcResult" class="calc-result hidden">
+          <p class="result-label">Resultado:</p>
+          <span id="calcResultValue" class="result-value">—</span>
+        </div>
+
+        <section id="calcProcedimientoSection" class="resultado-procedimiento hidden">
+          <p class="procedimiento-label">Procedimiento:</p>
+          <p class="procedimiento-line carreos"><span id="calcProcCarreos"></span></p>
+          <p class="procedimiento-line"><span id="calcProcN1"></span></p>
+          <p class="procedimiento-line">+ <span id="calcProcN2"></span></p>
+          <p class="procedimiento-line resultado">―――――</p>
+          <p class="procedimiento-line resultado"><span id="calcProcRes"></span></p>
+        </section>
+
+        <section id="calcErrorSection" class="error hidden">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <span id="calcErrorMessage"></span>
+        </section>
+      </section>
+
       <footer class="footer">
-        <p>Click en el resultado para copiar</p>
+        <p>Click en los resultados para copiar</p>
       </footer>
     </main>
 
-    <script src="app.js">
+    <script src="/static/app.js">
           // Registro del Service Worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js')

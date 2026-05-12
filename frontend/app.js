@@ -39,11 +39,31 @@ class ConversorAPI {
         const data = await response.json();
         return data.resultado;
     }
+
+    async sumaBinaria(bin1, bin2) {
+        const response = await fetch(`${this.baseUrl}/suma-binaria`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                bin1: bin1,
+                bin2: bin2
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || 'Error en la suma binaria');
+        }
+
+        return await response.json();
+    }
 }
 
 class ConversorApp {
     constructor() {
-        this.api = new ConversorAPI('https://conversor-sistemas-numericos-production.up.railway.app');
+        this.api = new ConversorAPI('http://127.0.0.1:8000');
         this.fromSystem = 'bin';
         this.toSystem = 'hex';
         this.fromBase = 2;
@@ -63,7 +83,12 @@ class ConversorApp {
             customFromBase: document.getElementById('customFromBase'),
             customToBase: document.getElementById('customToBase'),
             errorSection: document.getElementById('errorSection'),
-            errorMessage: document.getElementById('errorMessage')
+            errorMessage: document.getElementById('errorMessage'),
+            procedimientoSection: document.getElementById('procedimientoSection'),
+            procCarreos: document.getElementById('procCarreos'),
+            procN1: document.getElementById('procN1'),
+            procN2: document.getElementById('procN2'),
+            procRes: document.getElementById('procRes')
         };
 
         this.bindEvents();
@@ -213,6 +238,32 @@ class ConversorApp {
         this.elements.errorSection.classList.remove('hidden');
     }
 
+    hideProcedimiento() {
+        this.elements.procedimientoSection.classList.add('hidden');
+    }
+
+    showProcedimiento(procedimiento) {
+        // Obtener la longitud máxima de todos los valores
+        const maxLength = Math.max(
+            procedimiento.carreos.length,
+            procedimiento.n1.length,
+            procedimiento.n2.length,
+            procedimiento.res.length
+        );
+
+        // Alinear todos los valores a la derecha con padStart
+        const carreosPadded = procedimiento.carreos.padStart(maxLength);
+        const n1Padded = procedimiento.n1.padStart(maxLength);
+        const n2Padded = procedimiento.n2.padStart(maxLength);
+        const resPadded = procedimiento.res.padStart(maxLength);
+
+        this.elements.procCarreos.textContent = carreosPadded;
+        this.elements.procN1.textContent = n1Padded;
+        this.elements.procN2.textContent = n2Padded;
+        this.elements.procRes.textContent = resPadded;
+        this.elements.procedimientoSection.classList.remove('hidden');
+    }
+
     validateInput(numero, base) {
         const validChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.slice(0, base);
         const regex = new RegExp(`^[${validChars}]+$`);
@@ -235,6 +286,7 @@ class ConversorApp {
 
         if (this.fromBase === this.toBase) {
             this.elements.resultValue.textContent = numero.toUpperCase();
+            this.hideProcedimiento();
             return;
         }
 
@@ -247,8 +299,22 @@ class ConversorApp {
             this.elements.resultValue.style.animation = 'none';
             this.elements.resultValue.offsetHeight;
             this.elements.resultValue.style.animation = 'pop 0.3s ease';
+            
+            // Si es suma binaria (binario a binario), mostrar procedimiento
+            if (this.fromBase === 2 && this.toBase === 2) {
+                try {
+                    const procedimiento = await this.api.sumaBinaria(numero, '0');
+                    this.showProcedimiento(procedimiento);
+                } catch (e) {
+                    console.log('No se pudo obtener el procedimiento:', e);
+                    this.hideProcedimiento();
+                }
+            } else {
+                this.hideProcedimiento();
+            }
         } catch (error) {
             this.showError(error.message || 'Error al conectar con el servidor');
+            this.hideProcedimiento();
         } finally {
             this.hideLoading();
         }
@@ -275,7 +341,156 @@ class ConversorApp {
 
 document.addEventListener('DOMContentLoaded', () => {
     new ConversorApp();
+    new CalculadoraBinariaApp();
 });
+
+class CalculadoraBinariaApp {
+    constructor() {
+        this.api = new ConversorAPI('http://127.0.0.1:8000');
+
+        this.elements = {
+            binNum1: document.getElementById('binNum1'),
+            binNum2: document.getElementById('binNum2'),
+            calcBtn: document.getElementById('calcBtn'),
+            calcResult: document.getElementById('calcResult'),
+            calcResultValue: document.getElementById('calcResultValue'),
+            calcErrorSection: document.getElementById('calcErrorSection'),
+            calcErrorMessage: document.getElementById('calcErrorMessage'),
+            calcProcedimientoSection: document.getElementById('calcProcedimientoSection'),
+            calcProcCarreos: document.getElementById('calcProcCarreos'),
+            calcProcN1: document.getElementById('calcProcN1'),
+            calcProcN2: document.getElementById('calcProcN2'),
+            calcProcRes: document.getElementById('calcProcRes')
+        };
+
+        this.bindEvents();
+    }
+
+    bindEvents() {
+        this.elements.calcBtn.addEventListener('click', () => this.calcular());
+        this.elements.binNum1.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.calcular();
+        });
+        this.elements.binNum2.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.calcular();
+        });
+        this.elements.calcResultValue.addEventListener('click', () => this.copiarResultado());
+        [this.elements.binNum1, this.elements.binNum2].forEach(input => {
+            input.addEventListener('input', () => this.hideError());
+        });
+    }
+
+    hideError() {
+        this.elements.calcErrorSection.classList.add('hidden');
+    }
+
+    showError(message) {
+        this.elements.calcErrorMessage.textContent = message;
+        this.elements.calcErrorSection.classList.remove('hidden');
+    }
+
+    hideResult() {
+        this.elements.calcResult.classList.add('hidden');
+    }
+
+    showResult(resultado) {
+        this.elements.calcResultValue.textContent = resultado;
+        this.elements.calcResult.classList.remove('hidden');
+        this.elements.calcResultValue.style.animation = 'none';
+        this.elements.calcResultValue.offsetHeight;
+        this.elements.calcResultValue.style.animation = 'pop 0.3s ease';
+    }
+
+    hideProcedimiento() {
+        this.elements.calcProcedimientoSection.classList.add('hidden');
+    }
+
+    showProcedimiento(procedimiento) {
+        // Obtener la longitud máxima de todos los valores
+        const maxLength = Math.max(
+            procedimiento.carreos.length,
+            procedimiento.n1.length,
+            procedimiento.n2.length,
+            procedimiento.res.length
+        );
+
+        // Alinear todos los valores a la derecha con padStart
+        const carreosPadded = procedimiento.carreos.padStart(maxLength);
+        const n1Padded = procedimiento.n1.padStart(maxLength);
+        const n2Padded = procedimiento.n2.padStart(maxLength);
+        const resPadded = procedimiento.res.padStart(maxLength);
+
+        this.elements.calcProcCarreos.textContent = carreosPadded;
+        this.elements.calcProcN1.textContent = n1Padded;
+        this.elements.calcProcN2.textContent = n2Padded;
+        this.elements.calcProcRes.textContent = resPadded;
+        this.elements.calcProcedimientoSection.classList.remove('hidden');
+    }
+
+    showLoading() {
+        this.elements.calcBtn.disabled = true;
+        this.elements.calcBtn.querySelector('.btn-text').classList.add('hidden');
+        this.elements.calcBtn.querySelector('.btn-loader').classList.remove('hidden');
+    }
+
+    hideLoading() {
+        this.elements.calcBtn.disabled = false;
+        this.elements.calcBtn.querySelector('.btn-text').classList.remove('hidden');
+        this.elements.calcBtn.querySelector('.btn-loader').classList.add('hidden');
+    }
+
+    validarBinario(valor) {
+        return /^[01]+$/.test(valor);
+    }
+
+    async calcular() {
+        const bin1 = this.elements.binNum1.value.trim();
+        const bin2 = this.elements.binNum2.value.trim();
+
+        if (!bin1 || !bin2) {
+            this.showError('Ingresa ambos números binarios');
+            return;
+        }
+
+        if (!this.validarBinario(bin1) || !this.validarBinario(bin2)) {
+            this.showError('Los números deben contener solo 0 y 1');
+            return;
+        }
+
+        this.hideError();
+        this.showLoading();
+
+        try {
+            const resultado = await this.api.sumaBinaria(bin1, bin2);
+            this.showResult(resultado.resultado);
+            this.showProcedimiento(resultado);
+        } catch (error) {
+            this.showError(error.message || 'Error al calcular la suma');
+            this.hideResult();
+            this.hideProcedimiento();
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    async copiarResultado() {
+        const result = this.elements.calcResultValue.textContent;
+        if (!result || result === '—') return;
+
+        try {
+            await navigator.clipboard.writeText(result);
+            this.elements.calcResult.classList.add('copied');
+            this.elements.calcResultValue.textContent = '✓';
+
+            setTimeout(() => {
+                this.elements.calcResultValue.textContent = result;
+                this.elements.calcResult.classList.remove('copied');
+            }, 1000);
+        } catch (err) {
+            this.showError('No se pudo copiar al portapapeles');
+        }
+    }
+}
 
 const style = document.createElement('style');
 style.textContent = `
