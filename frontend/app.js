@@ -15,11 +15,11 @@ const BASE_NAMES = {
 
 class ConversorAPI {
     constructor(baseUrl) {
-        this.baseUrl = "/";
+        this.baseUrl = "";
     }
 
     async convertir(numero, baseIn, baseOut) {
-        const response = await fetch(`/convertir`, {
+        const response = await fetch(`${this.baseUrl}convertir`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ class ConversorAPI {
     }
 
     async sumaBinaria(bin1, bin2) {
-        const response = await fetch(`/suma-binaria`, {
+        const response = await fetch(`${this.baseUrl}suma-binaria`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ class ConversorAPI {
 
 class ConversorApp {
     constructor() {
-        this.api = new ConversorAPI('/');
+        this.api = new ConversorAPI('');
         this.fromSystem = 'bin';
         this.toSystem = 'hex';
         this.fromBase = 2;
@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 class CalculadoraBinariaApp {
     constructor() {
-        this.api = new ConversorAPI('/');
+        this.api = new ConversorAPI('');
 
         this.elements = {
             binNum1: document.getElementById('binNum1'),

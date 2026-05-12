@@ -1,20 +1,8 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from conversor import convertidor_universal, suma_binaria_paso_a_paso
-import os
 
 app = FastAPI()
-
-# Configuramos CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 class ConversionRequest(BaseModel):
     numero: str
@@ -25,8 +13,6 @@ class SumaBinariaRequest(BaseModel):
     bin1: str
     bin2: str
 
-# --- RUTAS DE LA API (Deben ir ANTES del mount) ---
-
 @app.post("/convertir")
 async def api_convertir(req: ConversionRequest):
     resultado = convertidor_universal(req.numero, req.base_in, req.base_out)
@@ -36,16 +22,9 @@ async def api_convertir(req: ConversionRequest):
 
 @app.post("/suma-binaria")
 async def api_suma_binaria(req: SumaBinariaRequest):
+    if not req.bin1 or not req.bin2 or not all(c in "01" for c in req.bin1) or not all(c in "01" for c in req.bin2):
+        raise HTTPException(status_code=400, detail="Dígitos inválidos")
     try:
-        if not all(c in '01' for c in req.bin1) or not all(c in '01' for c in req.bin2):
-            raise HTTPException(status_code=400, detail="Dígitos inválidos")
-        resultado = suma_binaria_paso_a_paso(req.bin1, req.bin2)
-        return resultado
+        return suma_binaria_paso_a_paso(req.bin1, req.bin2)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-@app.get("/")
-async def root():
-    return FileResponse("frontend/index.html")
-
-app.mount("/static", StaticFiles(directory="frontend"), name="static")

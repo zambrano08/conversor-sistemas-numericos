@@ -1,11 +1,10 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "main.py",
-      "use": "@vercel/python"
+  "version": 3,
+  "functions": {
+    "main.py": {
+      "runtime": "vercel-python"
     }
-  ],
+  },
   "routes": [
     {
       "src": "/convertir",
